@@ -4,23 +4,28 @@ const db = require("../config/db");
 exports.getJobs = async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM jobs ORDER BY id DESC");
-    res.json(result.rows);
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error("Get Jobs Error:", err.message);
     res.status(500).json({ error: "Error fetching jobs" });
   }
 };
 
-// ✅ CREATE JOB (admin only)
+// ✅ CREATE JOB
 exports.createJob = async (req, res) => {
   try {
     const { company, position, type, location } = req.body;
 
+    // 🔴 validation
+    if (!company || !position) {
+      return res.status(400).json({ error: "Company and position are required" });
+    }
+
     const result = await db.query(
-      `INSERT INTO jobs (company, position, type, location, created_by) 
-       VALUES ($1, $2, $3, $4, $5) 
+      `INSERT INTO jobs (company, position, type, location, created_by)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [company, position, type, location, req.user.id]
+      [company, position, type, location, req.user?.id]
     );
 
     res.status(201).json(result.rows[0]);
@@ -45,7 +50,11 @@ exports.updateJob = async (req, res) => {
       [company, position, type, location, id]
     );
 
-    res.json(result.rows[0]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+
+    res.status(200).json(result.rows[0]);
 
   } catch (err) {
     console.error("Update Job Error:", err.message);
@@ -58,9 +67,16 @@ exports.deleteJob = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await db.query("DELETE FROM jobs WHERE id=$1", [id]);
+    const result = await db.query(
+      "DELETE FROM jobs WHERE id=$1 RETURNING *",
+      [id]
+    );
 
-    res.json({ message: "Job deleted" });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+
+    res.status(200).json({ message: "Job deleted successfully" });
 
   } catch (err) {
     console.error("Delete Job Error:", err.message);
