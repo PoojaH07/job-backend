@@ -1,22 +1,25 @@
 const express = require("express");
 const router = express.Router();
 
-const jobsController = require("../controllers/jobsController");
+const {
+  getJobs,
+  createJob,
+  updateJob,
+  deleteJob,
+} = require("../controllers/jobsController");
+
 const { verifyToken, isAdmin } = require("../middleware/authMiddleware");
 
-// GET jobs
-router.get("/", jobsController.getJobs);
+// ✅ GET all jobs
+router.get("/", getJobs);
 
-// POST job (admin only)
-router.post("/", verifyToken, isAdmin, jobsController.createJob);
+// ✅ CREATE job (admin only)
+router.post("/", verifyToken, isAdmin, createJob);
 
-// UPDATE job
-router.put("/:id", verifyToken, isAdmin, jobsController.updateJob);
+// ✅ UPDATE job (admin only)
+router.put("/:id", verifyToken, isAdmin, updateJob);
 
-// DELETE job
-router.delete("/:id", verifyToken, isAdmin, jobsController.deleteJob);
+// ✅ DELETE job (admin only)
+router.delete("/:id", verifyToken, isAdmin, deleteJob);
 
 module.exports = router;
-
-
-

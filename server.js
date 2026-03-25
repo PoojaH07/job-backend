@@ -1,61 +1,35 @@
-const cors = require("cors");
-
 const express = require("express");
-const db = require("./config/db"); 
-const app = express();
-app.use(cors());
+const cors = require("cors");
+const db = require("./config/db");
 
+const app = express();
+
+// ✅ Middleware
+app.use(cors());
 app.use(express.json());
 
+// ✅ Test route
 app.get("/", (req, res) => {
   res.send("API running");
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
-app.post("/add-user", async (req, res) => {
-  try {
-    console.log("BODY:", req.body);
-    const { email, password, role } = req.body;
-
-    const result = await db.query(
-      "INSERT INTO users (email, password, role) VALUES ($1, $2, $3) RETURNING *",
-      [email, password, role]
-    );
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("ERROR:", err);
-    res.status(500).send("Error inserting user");
-  }
-});
-
-app.get("/users", async (req, res) => {
-  try {
-    const result = await db.query("SELECT * FROM users");
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching users");
-  }
-});
-
+// ✅ Routes
 const authRoutes = require("./routes/authRoutes");
-
-app.use("/api/auth", authRoutes);
-
 const jobsRoutes = require("./routes/jobsRoutes");
-
-app.use("/api/jobs", jobsRoutes);
-
 const applicationRoutes = require("./routes/applicationRoutes");
 
+app.use("/api/auth", authRoutes);
+app.use("/api/jobs", jobsRoutes);
 app.use("/api", applicationRoutes);
 
-
-const db = require("./config/db");
-
+// ✅ Test DB connection
 db.query("SELECT NOW()")
   .then(() => console.log("✅ DB Connected"))
   .catch(err => console.error("❌ DB Error:", err));
+
+// ✅ Start server (Render needs process.env.PORT)
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
