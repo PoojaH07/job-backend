@@ -10,16 +10,16 @@ const {
 
 const { verifyToken, isAdmin } = require("../middleware/authMiddleware");
 
-// ✅ GET all jobs
+// ✅ GET jobs
 router.get("/", getJobs);
 
-// ✅ CREATE job (admin only)
+// ✅ POST job
 router.post("/", verifyToken, isAdmin, createJob);
 
-// ✅ UPDATE job (admin only)
+// ✅ UPDATE job
 router.put("/:id", verifyToken, isAdmin, updateJob);
 
-// ✅ DELETE job (admin only)
+// ✅ DELETE job
 router.delete("/:id", verifyToken, isAdmin, deleteJob);
 
 module.exports = router;
