@@ -4,8 +4,19 @@ const db = require("./config/db");
 
 const app = express();
 
+// ✅ CORS FIX (VERY IMPORTANT FOR VERCEL)
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://job-frontend-ua5r.vercel.app/", // 🔴 replace with YOUR Vercel URL
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 // ✅ Middleware
-app.use(cors());
 app.use(express.json());
 
 // ✅ Root test route
@@ -25,14 +36,14 @@ app.use("/api", applicationRoutes);
 // ✅ DB connection check
 db.query("SELECT NOW()")
   .then(() => console.log("✅ DB Connected"))
-  .catch(err => console.error("❌ DB Error:", err.message));
+  .catch((err) => console.error("❌ DB Error:", err.message));
 
-// ✅ Handle unknown routes (VERY IMPORTANT)
+// ✅ 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// ✅ Global error handler (GOOD PRACTICE)
+// ✅ Global error handler
 app.use((err, req, res, next) => {
   console.error("Server Error:", err.stack);
   res.status(500).json({ error: "Something went wrong" });
