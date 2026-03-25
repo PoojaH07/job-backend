@@ -9,7 +9,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://job-frontend-ua5r.vercel.app/", // 🔴 replace with YOUR Vercel URL
+      "https://job-frontend-ua5r.vercel.app", // 🔴 replace with YOUR Vercel URL
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
