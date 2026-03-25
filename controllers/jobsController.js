@@ -1,5 +1,18 @@
 const db = require("../config/db");
 
+// ✅ GET ALL JOBS
+exports.getJobs = async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM jobs ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Get Jobs Error:", err.message);
+    res.status(500).json({ error: "Error fetching jobs" });
+  }
+};
+
+const db = require("../config/db");
+
 // GET all jobs
 exports.getJobs = async (req, res) => {
   try {

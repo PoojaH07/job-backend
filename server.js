@@ -52,3 +52,10 @@ app.use("/api/jobs", jobsRoutes);
 const applicationRoutes = require("./routes/applicationRoutes");
 
 app.use("/api", applicationRoutes);
+
+
+const db = require("./config/db");
+
+db.query("SELECT NOW()")
+  .then(() => console.log("✅ DB Connected"))
+  .catch(err => console.error("❌ DB Error:", err));
